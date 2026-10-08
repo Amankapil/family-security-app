@@ -95,7 +95,7 @@ class PreferencesManager(context: Context) {
         private const val KEY_API_URL = "api_url"
         private const val KEY_FCM_TOKEN = "fcm_token"
 
-        // 10.0.2.2 accesses host machine localhost from standard Android emulator
-        const val DEFAULT_API_URL = "http://10.0.2.2:5000"
+        // Live Vercel Production API URL
+        const val DEFAULT_API_URL = "https://family-security-app.vercel.app/api/v1"
     }
 }
