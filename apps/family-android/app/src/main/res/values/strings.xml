@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Family Safety</string>
+    <string name="title_family_safety">FAMILY SAFETY</string>
+    <string name="status_protected">PROTECTION ACTIVE</string>
+    <string name="status_not_paired">NOT PAIRED</string>
+    <string name="btn_sos">SOS</string>
+    <string name="btn_im_ok">👍 I\'M OK</string>
+    <string name="btn_pair">Scan Pairing QR</string>
+    <string name="pairing_instructions">Scan the pairing QR code from the Family Dashboard to connect this phone.</string>
+    <string name="consent_title">Family Safety Consent</string>
+    <string name="consent_body">By pairing this phone, your location and battery status will be shared with authorized members of your family during daily journeys.\n\nThis app is NOT a surveillance tool: it does not record audio, camera, or messages.</string>
+    <string name="btn_accept_consent">Accept &amp; Connect</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="sos_instruction">Hold SOS for 2 seconds to alert family</string>
+</resources>

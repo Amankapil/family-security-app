@@ -1,0 +1,2063 @@
+# FAMILY SAFETY NETWORK — MASTER DEVELOPMENT PROMPT
+
+You are a senior Android engineer, full-stack JavaScript engineer, backend architect, security engineer, DevOps engineer, UX designer, and product architect.
+
+Build a PRIVATE FAMILY SAFETY NETWORK.
+
+This is a real personal application that I will install on Android phones belonging to my trusted family members.
+
+The application is designed to help family members know whether each other are safe during daily travel.
+
+It is NOT a surveillance application.
+
+Every person whose phone is registered must explicitly know that their location is being shared and must consent to it.
+
+The first users will likely be:
+
+- Father
+- Mother
+- Brother
+- Sister
+- Me
+
+But DO NOT hardcode these people.
+
+The system must support ANY number of authorized family members.
+
+==================================================
+1. PRODUCT CONCEPT
+==================================================
+
+The product is:
+
+"Family Safety Network"
+
+Every person is a FAMILY MEMBER.
+
+Every family member can optionally have one or more registered devices.
+
+Every registered Android phone can share:
+
+- Current location
+- Journey status
+- Battery
+- Network state
+- Device health
+- Safety status
+
+The family dashboard shows all authorized members.
+
+Example:
+
+FAMILY SAFETY
+
+👨 Dad
+🟢 At Work
+
+👩 Mom
+🟢 At Work
+
+👨 Brother
+🚗 Travelling to Office
+
+👩 Sister
+🏠 At Home
+
+👨 Me
+🟢 Online
+
+The dashboard must NOT have hardcoded Dad/Mom/Brother/Sister logic.
+
+All members are dynamic database records.
+
+==================================================
+2. CORE OBJECTIVE
+==================================================
+
+The system should answer:
+
+"Are my family members safe?"
+
+It should automatically understand:
+
+HOME
+↓
+STARTED JOURNEY
+↓
+TRAVELLING
+↓
+REACHED DESTINATION
+↓
+AT DESTINATION
+↓
+STARTED RETURN
+↓
+TRAVELLING HOME
+↓
+REACHED HOME
+
+The system should require minimal interaction from family members.
+
+The system should only notify family members when something meaningful happens.
+
+==================================================
+3. DO NOT OVERENGINEER
+==================================================
+
+This is a small private family application.
+
+Do NOT build enterprise infrastructure unnecessarily.
+
+DO NOT introduce:
+
+- Microservices
+- Kubernetes
+- Kafka
+- RabbitMQ
+- Redis unless genuinely required
+- BullMQ unless genuinely required
+- Dedicated VPS
+- Multiple databases
+- Complex event sourcing
+- Complex DevOps infrastructure
+
+Use a simple, maintainable architecture.
+
+==================================================
+4. TECHNOLOGY STACK
+==================================================
+
+ANDROID APP
+
+Use:
+
+Kotlin
+Android Studio
+Native Android
+
+Use Android-native APIs for:
+
+- Location
+- Foreground Service
+- Geofencing
+- Battery information
+- Network state
+- Boot handling
+- Permissions
+- Activity/movement detection where appropriate
+
+Use:
+
+Fused Location Provider
+
+Do NOT use a website/PWA for background GPS.
+
+The Android application must be a real native Android application.
+
+--------------------------------------------------
+
+BACKEND
+
+Node.js
+JavaScript
+Express
+
+Database:
+
+MongoDB Atlas
+
+Push notifications:
+
+Firebase Cloud Messaging
+
+--------------------------------------------------
+
+WEB DASHBOARD
+
+Next.js
+JavaScript
+Tailwind CSS
+
+Maps:
+
+Google Maps Platform
+
+--------------------------------------------------
+
+HOSTING
+
+Vercel
+
+Deploy:
+
+- Dashboard
+- API
+
+Database:
+
+MongoDB Atlas
+
+Notifications:
+
+Firebase Cloud Messaging
+
+Do not require a VPS.
+
+==================================================
+5. HIGH LEVEL ARCHITECTURE
+==================================================
+
+                    FAMILY MEMBER PHONE
+                            │
+                            │
+                     GPS / Battery
+                            │
+                            ▼
+                ┌─────────────────────┐
+                │ Android Safety App │
+                │                     │
+                │ Kotlin              │
+                │ Foreground Service  │
+                │ Geofencing          │
+                │ Offline Queue       │
+                └──────────┬──────────┘
+                           │
+                           │ HTTPS
+                           ▼
+                  ┌──────────────────┐
+                  │   VERCEL API     │
+                  │                  │
+                  │ Authentication   │
+                  │ Family Logic     │
+                  │ Journey Engine   │
+                  │ Alert Engine     │
+                  └────────┬─────────┘
+                           │
+                  ┌────────┴─────────┐
+                  ▼                  ▼
+           MongoDB Atlas        Firebase FCM
+                  │                  │
+                  ▼                  ▼
+          Family Dashboard     Push Notifications
+                  │
+                  ▼
+              Family Members
+
+==================================================
+6. FAMILY MODEL
+==================================================
+
+This is extremely important.
+
+Do NOT create a "parent" architecture.
+
+Create a FAMILY architecture.
+
+Entities:
+
+Family
+User
+FamilyMembership
+Device
+Location
+Geofence
+Journey
+Alert
+Notification
+EmergencyContact
+DailySummary
+AuditLog
+
+Example:
+
+Family
+  id: family_001
+  name: Kapil Family
+
+Members:
+
+  Dad
+    userId: user_001
+    role: MEMBER
+    deviceId: device_001
+
+  Mom
+    userId: user_002
+    role: MEMBER
+    deviceId: device_002
+
+  Brother
+    userId: user_003
+    role: MEMBER
+    deviceId: device_003
+
+  Sister
+    userId: user_004
+    role: MEMBER
+    deviceId: device_004
+
+  Me
+    userId: user_005
+    role: ADMIN
+    deviceId: device_005
+
+Do NOT hardcode these users.
+
+==================================================
+7. FAMILY ROLES
+==================================================
+
+Support:
+
+OWNER
+ADMIN
+MEMBER
+
+OWNER:
+
+Can manage the family.
+
+ADMIN:
+
+Can manage authorized members, devices, locations and settings.
+
+MEMBER:
+
+Can share their own location and interact with safety features according to permissions.
+
+The architecture should allow more granular permissions later.
+
+==================================================
+8. FAMILY MEMBER PROFILE
+==================================================
+
+Each member should have:
+
+id
+familyId
+name
+profilePhoto optional
+role
+phone optional
+locationSharingEnabled
+visibility settings
+emergency settings
+createdAt
+updatedAt
+
+Do not store unnecessary personal information.
+
+==================================================
+9. DEVICE MODEL
+==================================================
+
+Each physical phone is a DEVICE.
+
+Device fields:
+
+id
+familyId
+userId
+deviceName
+manufacturer
+model
+androidVersion
+appVersion
+fcmToken
+lastSeenAt
+batteryLevel
+isCharging
+networkType
+locationPermission
+backgroundLocationPermission
+notificationPermission
+isActive
+createdAt
+updatedAt
+
+One user may eventually have multiple devices.
+
+Example:
+
+Dad
+  ├── Android phone
+  └── Tablet
+
+Only devices configured for location sharing should provide location.
+
+==================================================
+10. DEVICE PAIRING
+==================================================
+
+Do not hardcode accounts into the APK.
+
+Use secure device pairing.
+
+Recommended flow:
+
+ADMIN opens dashboard.
+
+Admin:
+
+Add Family Member
+
+↓
+
+Creates member profile
+
+↓
+
+System generates:
+
+PAIRING CODE / QR CODE
+
+↓
+
+Family member installs APK
+
+↓
+
+Scans QR code
+
+↓
+
+Signs/accepts consent
+
+↓
+
+Device becomes authorized
+
+↓
+
+Device appears in dashboard
+
+Example:
+
+ADD FAMILY MEMBER
+
+Name:
+[ Dad ]
+
+Role:
+[ Member ]
+
+Generate Pairing QR
+
+The QR should contain a short-lived secure pairing token.
+
+Do not put sensitive information directly in the QR.
+
+Pairing tokens must expire.
+
+Pairing must be one-time use.
+
+Admin can revoke a device.
+
+==================================================
+11. FAMILY DASHBOARD
+==================================================
+
+The main dashboard should dynamically show EVERY authorized family member.
+
+Example:
+
+FAMILY SAFETY
+
+------------------------------------------------
+
+TODAY
+
+4 Members
+
+🟢 3 Normal
+🟡 1 Travelling
+🔴 0 Critical
+
+------------------------------------------------
+
+FAMILY MEMBERS
+
+👨 Dad
+
+🟢 At Work
+Battery 74%
+Updated 18 sec ago
+
+
+👩 Mom
+
+🟢 At Work
+Battery 82%
+Updated 34 sec ago
+
+
+👨 Brother
+
+🚗 Travelling to Office
+Battery 67%
+Updated 21 sec ago
+
+
+👩 Sister
+
+🏠 At Home
+Battery 91%
+Updated 1 min ago
+
+------------------------------------------------
+
+MAP
+
+Show all authorized members who have location sharing enabled.
+
+==================================================
+12. MEMBER VISIBILITY
+==================================================
+
+Location sharing must be permission-based.
+
+Each member should have settings such as:
+
+locationSharingEnabled
+
+visibleToFamily
+
+emergencyLocationSharing
+
+allowAdminsToView
+
+The system must never assume that installing the APK automatically means unrestricted visibility.
+
+Default to clear consent.
+
+==================================================
+13. FAMILY MAP
+==================================================
+
+The dashboard map shows:
+
+- All authorized visible members
+- Current locations
+- Home locations where appropriate
+- Work/destination locations where appropriate
+- Active journey route
+- Location accuracy
+- Last update time
+
+Example:
+
+📍 Dad — At Work
+📍 Mom — At Work
+🚗 Brother — Travelling
+🏠 Sister — At Home
+
+Clicking a member opens their detail panel.
+
+==================================================
+14. MEMBER DETAIL PAGE
+==================================================
+
+Create:
+
+/members/:id
+
+Show:
+
+Name
+Profile photo
+Current status
+Current location
+Battery
+Network
+Last seen
+Current journey
+Today's timeline
+Journey history
+Alerts
+Device health
+Location sharing settings
+
+Timeline example:
+
+07:42
+🏠 At Home
+
+08:35
+🚗 Started Journey
+
+09:27
+🏢 Reached Work
+
+18:02
+🚗 Started Journey Home
+
+18:57
+🏠 Reached Home
+
+==================================================
+15. PARENT/FAMILY MEMBER ANDROID APP
+==================================================
+
+The Android app must work for ANY family member.
+
+Do not display:
+
+"Dad App"
+
+"Mom App"
+
+Instead dynamically display the logged-in member's name.
+
+Example:
+
+FAMILY SAFETY
+
+👨 Aman
+
+🟢 PROTECTION ACTIVE
+
+Location:
+Active
+
+Battery:
+78%
+
+Network:
+Connected
+
+Last update:
+12 seconds ago
+
+Status:
+
+🚗 Travelling to Office
+
+-------------------------
+
+🆘 SOS
+
+-------------------------
+
+👍 I'M OK
+
+-------------------------
+
+Settings
+
+==================================================
+16. MINIMAL USER INTERACTION
+==================================================
+
+The app should work automatically.
+
+Family member should NOT have to:
+
+- Start tracking every morning
+- Stop tracking every evening
+- Press "Start Journey"
+- Press "Reached Work"
+
+The system should detect these automatically.
+
+Buttons should primarily be for:
+
+SOS
+I'm OK
+Settings
+Permission fixes
+
+==================================================
+17. LOCATION TRACKING
+==================================================
+
+Implement dedicated LocationService.
+
+Collect:
+
+latitude
+longitude
+accuracy
+speed
+heading
+timestamp
+battery
+network state
+
+Validate location.
+
+Reject:
+
+- Invalid coordinates
+- Impossible jumps
+- Impossible speed
+- Stale timestamps
+- Extremely inaccurate GPS
+
+Location object:
+
+{
+  userId,
+  deviceId,
+  latitude,
+  longitude,
+  accuracy,
+  speed,
+  heading,
+  timestamp,
+  batteryLevel,
+  networkType
+}
+
+==================================================
+18. ADAPTIVE LOCATION FREQUENCY
+==================================================
+
+DO NOT track every few seconds all day.
+
+HOME:
+
+Use geofence and low-frequency updates.
+
+WORK:
+
+Use geofence and low-frequency updates.
+
+TRAVELLING:
+
+Approximately 30–60 second updates.
+
+STATIONARY:
+
+Reduce frequency where safe.
+
+POSSIBLE INCIDENT:
+
+Temporarily increase frequency if technically appropriate.
+
+SOS:
+
+Immediately request current location.
+
+All intervals must be configurable.
+
+Battery efficiency is a primary requirement.
+
+==================================================
+19. GEOFENCES
+==================================================
+
+Every member may have:
+
+HOME
+WORK
+OTHER DESTINATION
+
+Do NOT assume everyone works at the same place.
+
+Example:
+
+Dad:
+
+HOME
+WORK
+
+Mom:
+
+HOME
+WORK
+
+Brother:
+
+HOME
+OFFICE
+
+Sister:
+
+HOME
+COLLEGE
+
+Each geofence:
+
+id
+userId/familyId
+name
+type
+latitude
+longitude
+radius
+enabled
+
+Types:
+
+HOME
+WORK
+CUSTOM
+
+Radius must be configurable.
+
+Use debounce/dwell logic.
+
+Avoid GPS jitter causing repeated events.
+
+==================================================
+20. JOURNEY DETECTION
+==================================================
+
+Automatically detect journeys.
+
+Examples:
+
+HOME → WORK
+
+HOME → COLLEGE
+
+WORK → HOME
+
+COLLEGE → HOME
+
+HOME → CUSTOM DESTINATION
+
+Do not hardcode "office".
+
+Journey should contain:
+
+id
+userId
+deviceId
+originGeofence
+destinationGeofence
+startedAt
+completedAt
+status
+distance
+estimatedDuration
+actualDuration
+lastLocationAt
+
+Statuses:
+
+STARTING
+TRAVELLING
+DELAYED
+COMPLETED
+CANCELLED
+UNKNOWN
+SOS
+
+==================================================
+21. DESTINATION DETECTION
+==================================================
+
+If a member leaves HOME and moves toward their configured WORK location:
+
+Journey:
+
+HOME → WORK
+
+If they enter the WORK geofence:
+
+Journey completed.
+
+If they leave WORK:
+
+WORK → HOME
+
+If they have multiple destinations, use the most likely destination based on:
+
+- Direction
+- Distance
+- Historical behavior
+- Configured schedule
+- Geofence
+
+Do not make aggressive assumptions.
+
+Allow manual correction.
+
+==================================================
+22. JOURNEY NOTIFICATIONS
+==================================================
+
+Examples:
+
+🟢 Dad started travelling to work.
+
+🟢 Brother started travelling to office.
+
+🟢 Sister started travelling to college.
+
+✅ Dad reached work safely.
+
+✅ Brother reached office safely.
+
+🏠 Mom reached home.
+
+All notification text must dynamically use:
+
+member.name
+
+destination.name
+
+Do not hardcode family member names.
+
+==================================================
+23. ABNORMAL JOURNEY DETECTION
+==================================================
+
+Detect:
+
+- Stale location
+- Unusually long journey
+- Phone offline
+- Critical battery
+- Prolonged stationary period
+- Significant route deviation
+
+Do not immediately call something an accident.
+
+Use:
+
+"Possible safety issue detected."
+
+NOT:
+
+"Accident detected."
+
+==================================================
+24. FALSE POSITIVE REDUCTION
+==================================================
+
+GPS can fail.
+
+Internet can fail.
+
+Android can kill background services.
+
+Phones can enter low-signal areas.
+
+Family members can stop somewhere.
+
+Routes can change.
+
+Therefore:
+
+Never create a critical alert from one weak signal.
+
+Use multiple signals.
+
+Example:
+
+Location missing for 2 minutes:
+
+No alert.
+
+Location missing for 10+ minutes:
+
+Check:
+
+- Network
+- Battery
+- Last location
+- Last speed
+- Journey state
+- Device state
+
+Then potentially create:
+
+WARNING
+
+==================================================
+25. ALERT LEVELS
+==================================================
+
+INFO
+WARNING
+HIGH
+CRITICAL
+
+Examples:
+
+INFO:
+
+"Brother started travelling."
+
+INFO:
+
+"Sister reached college."
+
+WARNING:
+
+"Brother's journey is taking longer than usual."
+
+HIGH:
+
+"Brother's location has not updated for 15 minutes during an active journey."
+
+CRITICAL:
+
+"Possible safety issue detected. Please check Brother's phone."
+
+SOS:
+
+"Brother requested emergency assistance."
+
+==================================================
+26. SOS
+==================================================
+
+Every family member with the app gets an SOS feature.
+
+Press and hold for 2 seconds.
+
+On activation:
+
+1. Get current location.
+2. Send SOS.
+3. Notify configured family members.
+4. Continue location updates.
+5. Show emergency contacts.
+6. Allow resolution/cancellation.
+
+SOS:
+
+{
+  userId,
+  deviceId,
+  timestamp,
+  latitude,
+  longitude,
+  battery,
+  network,
+  triggerType: "MANUAL_SOS"
+}
+
+Dashboard:
+
+🚨 SOS
+
+Brother needs assistance.
+
+Location:
+[Open Map]
+
+Battery:
+42%
+
+Last update:
+5 seconds ago
+
+==================================================
+27. I'M OK
+==================================================
+
+Every member can press:
+
+👍 I'M OK
+
+The event should:
+
+- Record confirmation
+- Capture location
+- Resolve applicable warning
+- Store timestamp
+
+==================================================
+28. DAILY FAMILY SUMMARY
+==================================================
+
+Create a family timeline.
+
+Example:
+
+FAMILY SAFETY — TODAY
+
+Dad
+🟢 Normal
+
+08:40 Home → Work
+09:32 Reached Work
+
+18:04 Work → Home
+19:01 Reached Home
+
+
+Mom
+🟢 Normal
+
+08:51 Home → Work
+09:41 Reached Work
+
+
+Brother
+🟡 Travelling
+
+Started:
+18:03
+
+Current:
+12 km from Home
+
+
+Sister
+🟢 At Home
+
+No active alerts.
+
+==================================================
+29. DEVICE HEALTH
+==================================================
+
+For every registered device show:
+
+Battery
+Charging
+Network
+GPS permission
+Background location permission
+Notification permission
+Last sync
+App version
+Android version
+Device model
+
+Example:
+
+Brother's Phone
+
+🟢 Healthy
+
+Battery: 68%
+GPS: Enabled
+Background location: Enabled
+Notifications: Enabled
+Network: 5G
+Last sync: 12 sec ago
+
+If a permission is disabled:
+
+⚠️ Background location permission disabled.
+
+==================================================
+30. OFFLINE SUPPORT
+==================================================
+
+When internet disappears:
+
+- Continue location tracking
+- Store a local queue
+- Preserve timestamps
+- Retry upload
+- Prevent duplicate uploads
+
+SOS should attempt immediate delivery.
+
+If network is unavailable:
+
+Store the SOS locally and send as soon as connectivity returns.
+
+==================================================
+31. DEVICE RESTART
+==================================================
+
+After Android reboot:
+
+- Restore required services
+- Restore tracking state
+- Re-register geofences
+- Check permissions
+- Resume operation
+
+==================================================
+32. ANDROID BACKGROUND RESTRICTIONS
+==================================================
+
+Implement according to CURRENT Android APIs.
+
+Handle:
+
+- Foreground Service
+- Location foreground-service type
+- Background location permission
+- Doze mode
+- App standby
+- Battery optimization
+- Process death
+- Reboot
+- Manufacturer-specific battery restrictions
+- Permission changes
+
+Never pretend background GPS is guaranteed.
+
+If Android prevents reliable operation:
+
+Show the member a clear explanation and instructions.
+
+==================================================
+33. PRIVACY
+==================================================
+
+This is a consent-based family application.
+
+Every member must know:
+
+- Their location is being shared
+- Who can access it
+- Why it is collected
+- When it is active
+
+Do NOT implement:
+
+- Hidden tracking
+- Secret recording
+- Microphone surveillance
+- Camera surveillance
+- Screen recording
+- Message monitoring
+- Call recording
+
+This application is ONLY for family safety.
+
+==================================================
+34. AUTHENTICATION
+==================================================
+
+Support secure family authentication.
+
+Admin creates family.
+
+Admin adds members.
+
+Member receives pairing code/QR.
+
+Member installs APK.
+
+Member scans QR.
+
+Member accepts consent.
+
+Device becomes authorized.
+
+Admin can revoke device.
+
+Do not hardcode credentials.
+
+==================================================
+35. SECURITY
+==================================================
+
+Location data is highly sensitive.
+
+Implement:
+
+HTTPS
+Secure authentication
+Authorization
+Short-lived access tokens
+Refresh token rotation
+Password hashing
+Device authentication
+Device revocation
+Family-level authorization
+Rate limiting
+Input validation
+Secure headers
+Restricted CORS
+Audit logs
+
+Every API request must verify:
+
+Authentication
+Family membership
+Permission
+Resource ownership
+
+Never trust familyId/userId from client input.
+
+Derive authorization from authenticated identity.
+
+==================================================
+36. DATABASE
+==================================================
+
+MongoDB Atlas.
+
+Models:
+
+Family
+User
+FamilyMembership
+Device
+Location
+Geofence
+Journey
+Alert
+Notification
+EmergencyContact
+DailySummary
+AuditLog
+
+Important indexes:
+
+Location:
+userId + timestamp
+
+Journey:
+userId + startedAt
+
+Alert:
+familyId + createdAt
+
+Device:
+familyId + userId
+
+Do not store unlimited raw location history.
+
+==================================================
+37. LOCATION RETENTION
+==================================================
+
+Configurable.
+
+Example:
+
+Raw location:
+30 days
+
+Journey summary:
+Longer
+
+Alerts:
+Longer
+
+Allow cleanup jobs.
+
+Do not keep precise location history forever without a reason.
+
+==================================================
+38. API
+==================================================
+
+Authentication:
+
+POST /auth/login
+POST /auth/refresh
+
+Family:
+
+GET /family
+PATCH /family
+GET /family/members
+POST /family/members
+PATCH /family/members/:id
+DELETE /family/members/:id
+
+Pairing:
+
+POST /pairing/create
+POST /pairing/complete
+POST /pairing/revoke
+
+Devices:
+
+POST /devices/register
+POST /devices/heartbeat
+GET /devices/:id
+POST /devices/:id/revoke
+
+Locations:
+
+POST /locations
+GET /members/:id/location
+GET /members/:id/locations
+
+Journeys:
+
+GET /members/:id/journeys
+GET /members/:id/timeline
+
+Geofences:
+
+GET /members/:id/geofences
+POST /members/:id/geofences
+PATCH /geofences/:id
+DELETE /geofences/:id
+
+Alerts:
+
+GET /alerts
+POST /alerts/:id/acknowledge
+
+SOS:
+
+POST /sos
+POST /sos/:id/resolve
+
+Status:
+
+POST /status/im-ok
+
+Settings:
+
+GET /settings
+PATCH /settings
+
+Validate every request.
+
+==================================================
+39. REALTIME
+==================================================
+
+Dashboard should receive realtime updates for:
+
+location.updated
+journey.started
+journey.updated
+journey.completed
+alert.created
+alert.updated
+sos.created
+sos.resolved
+device.status
+
+Use family-scoped realtime channels.
+
+Never leak one family's location to another family.
+
+Use a Vercel-compatible realtime architecture.
+
+==================================================
+40. PUSH NOTIFICATIONS
+==================================================
+
+Use Firebase Cloud Messaging.
+
+Notifications:
+
+Journey started
+Reached destination
+Reached home
+Long journey
+Location stale
+Low battery
+Possible safety issue
+SOS
+
+Implement:
+
+- Deduplication
+- Cooldowns
+- Severity
+- Per-member notification preferences
+
+Critical SOS notifications should not be silently suppressed.
+
+==================================================
+41. MEMBER SETTINGS
+==================================================
+
+Every family member can have:
+
+Name
+Profile image
+Home
+Work
+Other destinations
+Expected schedule
+Location sharing status
+Notification preferences
+Emergency contacts
+
+Admin can manage family configuration according to role.
+
+==================================================
+42. SCHEDULES
+==================================================
+
+Do not assume everyone has a 9-to-5 job.
+
+Each member can have their own schedule.
+
+Example:
+
+Dad:
+
+Mon-Fri
+08:00–09:30 departure
+09:00–18:00 work
+17:00–20:00 return
+
+Brother:
+
+Mon-Sat
+08:30–10:00 departure
+10:00–19:00 work
+
+Sister:
+
+College schedule
+
+Schedules are optional.
+
+Weekends/holidays should not automatically create false alerts.
+
+==================================================
+43. MULTIPLE DESTINATIONS
+==================================================
+
+Do not limit the application to:
+
+HOME → WORK.
+
+Support:
+
+HOME
+WORK
+COLLEGE
+GYM
+OTHER
+
+A member may have multiple destinations.
+
+Each destination can have:
+
+name
+type
+latitude
+longitude
+radius
+expected schedule
+
+==================================================
+44. MEMBER CARD STATUS
+==================================================
+
+Possible statuses:
+
+🏠 At Home
+
+🚗 Travelling
+
+🏢 At Work
+
+🎓 At College
+
+📍 At Destination
+
+🟡 Last Known Location
+
+⚠️ Possible Issue
+
+🚨 SOS
+
+⚫ Offline
+
+🟢 Normal
+
+Use dynamic destination names.
+
+==================================================
+45. FAMILY DASHBOARD FILTERS
+==================================================
+
+Dashboard should allow:
+
+All
+At Home
+Travelling
+At Work
+Offline
+Warnings
+SOS
+
+Search family members by name.
+
+==================================================
+46. MAP UX
+==================================================
+
+Clicking a marker opens:
+
+Name
+Status
+Battery
+Last updated
+Destination
+Journey
+
+Click:
+
+View Details
+
+to open member page.
+
+Use clustering only if the family becomes large.
+
+Do not overcomplicate for a small family.
+
+==================================================
+47. DESIGN
+==================================================
+
+The UI should feel:
+
+Calm
+Friendly
+Trustworthy
+Simple
+Modern
+
+Not:
+
+Military
+Surveillance-like
+Overly technical
+
+Use clear status colors.
+
+The parent app should have very large controls.
+
+==================================================
+48. TESTING
+==================================================
+
+Test:
+
+Authentication
+Authorization
+Family isolation
+Device pairing
+Device revocation
+Location validation
+Geofencing
+Journey detection
+Journey completion
+Alert generation
+Alert deduplication
+SOS
+Offline queue
+Device restart
+Permission changes
+
+Scenarios:
+
+1. Dad leaves home
+2. Dad reaches work
+3. Dad returns home
+4. Mom travels to work
+5. Brother travels to office
+6. Sister travels to college
+7. Member remains at home
+8. Member changes destination
+9. GPS unavailable
+10. Internet unavailable
+11. Phone restarted
+12. Battery low
+13. Long journey
+14. Member stops during journey
+15. Alternate route
+16. SOS
+17. Duplicate location
+18. Stale location
+19. Permission revoked
+20. App process killed
+21. Device revoked
+22. Unauthorized family attempts to access another family
+23. Multiple devices for one member
+
+==================================================
+49. REAL DEVICE TESTING
+==================================================
+
+Do not rely only on emulators.
+
+Test on real Android devices.
+
+Test:
+
+- Screen locked
+- Screen off
+- Mobile data
+- Wi-Fi
+- Weak network
+- GPS disabled
+- Battery saver
+- Battery optimization
+- Device reboot
+- App process killed
+- Location permission revoked
+- Background location revoked
+
+==================================================
+50. PROJECT STRUCTURE
+==================================================
+
+Use:
+
+family-safety/
+
+├── apps/
+│   ├── family-android/
+│   ├── dashboard/
+│   └── api/
+│
+├── packages/
+│   └── shared-types/
+│
+├── docs/
+│   ├── architecture/
+│   ├── api/
+│   ├── security/
+│   └── deployment/
+│
+├── .env.example
+├── README.md
+└── package.json
+
+The Android app must be generic.
+
+It must NOT contain:
+
+DadActivity
+MomActivity
+BrotherActivity
+SisterActivity
+
+Use dynamic authenticated member data.
+
+==================================================
+51. DEPLOYMENT
+==================================================
+
+Target:
+
+Vercel
+
+For:
+
+Dashboard
+API
+
+MongoDB:
+
+MongoDB Atlas
+
+Notifications:
+
+Firebase Cloud Messaging
+
+Maps:
+
+Google Maps Platform
+
+Android:
+
+Direct APK initially.
+
+Google Play Store is NOT required initially.
+
+==================================================
+52. NO PLAY STORE DEPENDENCY
+==================================================
+
+The first version must work by generating an APK and installing it directly on authorized family phones.
+
+Do not make Play Store publication a requirement.
+
+Later publication can be considered.
+
+==================================================
+53. DEVELOPMENT PHASES
+==================================================
+
+PHASE 0
+Repository/environment inspection + architecture
+
+PHASE 1
+Monorepo/project setup
+
+PHASE 2
+MongoDB + backend foundation
+
+PHASE 3
+Family/user/member authentication
+
+PHASE 4
+Secure device pairing
+
+PHASE 5
+Minimal Android app
+
+PHASE 6
+Foreground location service
+
+PHASE 7
+Geofencing
+
+PHASE 8
+Journey detection
+
+PHASE 9
+Family dashboard + map
+
+PHASE 10
+Realtime updates
+
+PHASE 11
+Push notifications
+
+PHASE 12
+SOS
+
+PHASE 13
+Offline support
+
+PHASE 14
+Device health
+
+PHASE 15
+Abnormal journey detection
+
+PHASE 16
+Security hardening
+
+PHASE 17
+Real-device testing
+
+PHASE 18
+Vercel production deployment
+
+Do not implement future phases prematurely.
+
+==================================================
+54. AI CODING RULES
+==================================================
+
+Before writing code:
+
+1. Inspect the repository.
+2. Inspect existing files.
+3. Check environment.
+4. Check installed versions.
+5. Check Android tooling.
+6. Check Node tooling.
+7. Check Git state.
+
+Do not overwrite existing work unnecessarily.
+
+Do not generate the entire application at once.
+
+Work phase-by-phase.
+
+After every phase:
+
+1. List files created.
+2. List files modified.
+3. Explain architecture decisions.
+4. Run tests.
+5. Run lint.
+6. Run type checks.
+7. Run builds.
+8. Fix errors.
+9. Explain what works.
+10. Explain what remains.
+11. Explain manual configuration.
+
+Never silently ignore an error.
+
+==================================================
+55. CODE QUALITY
+==================================================
+
+JavaScript:
+
+Strict mode.
+
+Kotlin:
+
+Follow modern Android/Kotlin best practices.
+
+Avoid:
+
+- Giant files
+- Duplicated logic
+- Hardcoded users
+- Hardcoded locations
+- Hardcoded API keys
+- Hardcoded tokens
+- Hardcoded family names
+- Unnecessary abstractions
+- `any` unless genuinely required
+
+Use:
+
+- Strong typing
+- Validation
+- Reusable services
+- Proper error handling
+- Clean architecture appropriate to project size
+
+==================================================
+56. ENVIRONMENT
+==================================================
+
+Create:
+
+.env.example
+
+Expected configuration may include:
+
+MONGODB_URI
+JWT_SECRET
+JWT_REFRESH_SECRET
+FCM configuration
+GOOGLE_MAPS_API_KEY
+CORS_ORIGINS
+API_URL
+
+Never commit actual secrets.
+
+==================================================
+57. FINAL ACCEPTANCE CRITERIA
+==================================================
+
+The system is successful when:
+
+1. I can create a family.
+2. I can become the family owner/admin.
+3. I can add Dad.
+4. I can add Mom.
+5. I can add Brother.
+6. I can add Sister.
+7. I can add additional members later.
+8. Each member can pair their Android phone.
+9. Each phone appears as a registered device.
+10. Each authorized device can send location.
+11. I can see all authorized members on one dashboard.
+12. Members can have different home locations.
+13. Members can have different workplaces/destinations.
+14. Members can have different schedules.
+15. The system automatically detects journeys.
+16. The system automatically detects destination arrival.
+17. Battery is visible.
+18. Last-seen is visible.
+19. Device health is visible.
+20. Location works with screen locked.
+21. Background location works using Android-supported mechanisms.
+22. Temporary internet loss does not lose location permanently.
+23. Phone restart is handled.
+24. Permission problems are detected.
+25. SOS works for every authorized member.
+26. Push notifications work.
+27. Alerts are dynamically associated with the correct member.
+28. No family member can access another family's data.
+29. Members can control location sharing according to family permissions.
+30. Device revocation works.
+31. Raw location retention is controlled.
+32. Secrets are not committed.
+33. Dashboard works on desktop and mobile.
+34. API deploys to Vercel.
+35. Dashboard deploys to Vercel.
+36. MongoDB Atlas works in production.
+37. Firebase FCM works.
+38. APK can be generated and installed directly.
+39. The system works on real Android phones.
+40. The application remains simple enough for non-technical family members.
+
+==================================================
+58. FIRST TASK — ONLY PHASE 0
+==================================================
+
+DO NOT IMPLEMENT THE APPLICATION YET.
+
+First inspect the current workspace/repository.
+
+Then provide:
+
+A. Current environment
+
+B. Proposed architecture
+
+C. Recommended technology versions
+
+D. Exact folder structure
+
+E. Family/user/member/device data model
+
+F. MongoDB schema
+
+G. API endpoint list
+
+H. Authentication architecture
+
+I. Device pairing architecture
+
+J. Android location architecture
+
+K. Geofencing strategy
+
+L. Journey detection strategy
+
+M. Realtime architecture compatible with Vercel
+
+N. Firebase configuration required
+
+O. Google Maps configuration required
+
+P. Android permissions required
+
+Q. Security model
+
+R. Development phases
+
+S. Risks and Android limitations
+
+T. Exact setup commands
+
+Do not write application code yet.
+
+STOP after Phase 0.
+
+Wait for my approval.
+
+==================================================
+FINAL PRINCIPLE
+==================================================
+
+This is a FAMILY SAFETY NETWORK.
+
+Not a parent tracker.
+
+Not a surveillance system.
+
+Every authorized family member is a first-class member.
+
+The application must dynamically support:
+
+Dad
+Mom
+Brother
+Sister
+Me
+and any additional trusted family members.
+
+Every installed and paired APK becomes an authorized family device.
+
+The dashboard should automatically show all authorized members according to their privacy/visibility permissions.
+
+The system should make family members feel:
+
+"Someone in my family will know if something unusual happens during my journey."
+
+Priorities:
+
+RELIABILITY > FEATURES
+
+BATTERY EFFICIENCY > EXCESSIVE TRACKING
+
+FALSE-POSITIVE REDUCTION > AGGRESSIVE ALERTS
+
+PRIVACY > UNNECESSARY DATA
+
+SIMPLE UX > COMPLEXITY
+
+START WITH PHASE 0 ONLY.

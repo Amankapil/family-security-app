@@ -1,0 +1,13 @@
+{
+  "name": "@family-safety/shared-types",
+  "version": "1.0.0",
+  "description": "Shared types, schemas, and domain constants for Family Safety Network",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test",
+    "lint": "echo 'Linting shared-types...'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED"
+}

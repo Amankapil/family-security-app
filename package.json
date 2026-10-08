@@ -1,0 +1,27 @@
+{
+  "name": "family-safety-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Private Family Safety Network Monorepo",
+  "workspaces": [
+    "packages/*",
+    "apps/api",
+    "apps/dashboard"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace=@family-safety/api",
+    "dev:dashboard": "npm run dev --workspace=@family-safety/dashboard",
+    "build:shared": "npm run build --workspace=@family-safety/shared-types",
+    "build:api": "npm run build --workspace=@family-safety/api",
+    "build:dashboard": "npm run build --workspace=@family-safety/dashboard",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present"
+  },
+  "keywords": [
+    "family-safety",
+    "location-tracking",
+    "privacy-first"
+  ],
+  "author": "Kapil Family",
+  "license": "UNLICENSED"
+}

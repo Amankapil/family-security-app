@@ -1,0 +1,41 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Node modules
+node_modules
+.pnp
+.pnp.js
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+dist
+build
+.next
+out
+
+# Android
+apps/family-android/.gradle/
+apps/family-android/build/
+apps/family-android/*/build/
+apps/family-android/local.properties
+apps/family-android/.idea/
+apps/family-android/*.iml
+apps/family-android/*/*.iml
+.cxx/
+*.apk
+*.aab
+google-services.json
+
+# OS files
+.DS_Store
+Thumbs.db

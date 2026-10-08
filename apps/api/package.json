@@ -1,0 +1,26 @@
+{
+  "name": "@family-safety/api",
+  "version": "1.0.0",
+  "description": "Backend API for Family Safety Network",
+  "main": "src/app.js",
+  "scripts": {
+    "dev": "node --watch src/app.js",
+    "start": "node src/app.js",
+    "test": "node --test --test-concurrency=1",
+    "lint": "echo 'Linting API...'"
+  },
+  "dependencies": {
+    "@family-safety/shared-types": "*",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^8.7.1",
+    "firebase-admin": "^13.10.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.3.1",
+    "pusher": "^5.2.0"
+  },
+  "private": true
+}
