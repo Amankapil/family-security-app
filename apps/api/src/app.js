@@ -65,4 +65,21 @@ app.use('/api/v1/realtime', realtimeRoutes);
 // Global Error Handler
 app.use(errorHandler);
 
+if (require.main === module) {
+  const PORT = process.env.PORT || 5001;
+  const { connectDB } = require('./config/db');
+  const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/family_safety';
+
+  connectDB(mongoUri)
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log(`[API] Family Safety Network API running on http://localhost:${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error('[API] Failed to connect to database:', err);
+      process.exit(1);
+    });
+}
+
 module.exports = app;
