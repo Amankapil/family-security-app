@@ -42,7 +42,19 @@ app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(sanitizeMiddleware);
 
-// Health Check
+// Health & Root Status Checks
+app.get('/', (req, res) => {
+  res.status(200).json({
+    service: 'Family Safety Network API',
+    status: 'online',
+    version: '1.0.0',
+    documentation: {
+      health: '/health',
+      apiBase: '/api/v1'
+    }
+  });
+});
+
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
