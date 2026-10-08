@@ -18,22 +18,22 @@ const { sanitizeMiddleware, authLimiter, pairingLimiter } = require('./middlewar
 
 const app = express();
 
-// Security Headers
-app.use(helmet());
-
-// CORS configuration
-const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3000,http://localhost:5000').split(',');
+// CORS configuration (Must be before helmet so preflight and cross-origin fetch succeed)
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile native Android apps)
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(null, true); // Dev-friendly fallback
-    },
+    origin: true, // Allow any calling origin (including Vercel dashboard and local)
     credentials: true,
-    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS']
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Device-Token', 'X-Device-Id']
+  })
+);
+app.options('*', cors());
+
+// Security Headers (Configured to permit cross-origin API access)
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginOpenerPolicy: false
   })
 );
 
